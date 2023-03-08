@@ -1,4 +1,4 @@
-# compose-json-viewer
+# JetpackCompose JsonViewer
 A JSON viewer, built in Jetpack Compose
 
 ### FEATURES
