@@ -1,5 +1,6 @@
 package com.evdayapps.jsonviewer
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,9 +18,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -54,19 +53,26 @@ fun JsonViewerWidgetPreview() {
     Box(
         modifier = Modifier.background(color = Color.White)
     ) {
-        JsonViewerWidget(list, onToggleExpand = {})
+        JsonViewerWidget(list)
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
-fun JsonViewerWidget(list: List<JsonItem>, onToggleExpand: (item: JsonItem) -> Unit) {
+fun JsonViewerWidget(
+    list: List<JsonItem>
+) {
     val horizontalScrollState = rememberScrollState()
+    var filteredList by mutableStateOf(list)
 
     LazyColumn(
         modifier = Modifier.horizontalScroll(horizontalScrollState)
     ) {
-        items(list) {
-            JsonItemWidget(it, onToggleExpand)
+        items(filteredList) {
+            JsonItemWidget(it, onToggleExpand = {
+                it.expanded = !it.expanded
+                filteredList = list.filter { it.ancestry.all { it.expanded } }
+            })
         }
     }
 }

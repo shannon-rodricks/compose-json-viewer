@@ -52,22 +52,15 @@ class MainActivity : ComponentActivity() {
 fun PageWidget(
     loadData: () -> String
 ) {
-    var list by remember {
-        mutableStateOf<List<JsonItem>>(listOf())
-    }
-    var filteredList by remember {
+    val list = remember {
         mutableStateOf<List<JsonItem>>(listOf())
     }
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            list = JsonParser().parse(loadData())
-            filteredList = list
+            list.value = JsonParser().parse(loadData())
         }
     }
 
-    JsonViewerWidget(list = filteredList, onToggleExpand = {
-        it.expanded = !it.expanded
-        filteredList = list.filter { it.ancestry.all { it.expanded } }
-    })
+    JsonViewerWidget(list = list.value)
 }
