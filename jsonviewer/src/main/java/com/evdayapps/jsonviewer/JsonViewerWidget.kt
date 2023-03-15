@@ -28,33 +28,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 
-@Preview(device = Devices.PIXEL_4_XL)
-@Composable
-private fun JsonViewerWidgetPreview() {
-    val json = JSONArray().apply {
-        for (i in 0 until 10) {
-            put(JSONObject().apply {
-                put("string", "string_$i")
-                put("boolean", true)
-                put("float", i)
-                put("integer", i.toFloat())
-                put("array", JSONArray().apply {
-                    put(JSONObject().apply {
-                        put("string$i", "test")
-                    })
-                })
-            })
-        }
-    }
-
-    val list = JsonParser().parse(json.toString())
-    Box(
-        //modifier = Modifier.background(color = Color.White)
-    ) {
-        JsonViewerWidget(list = list, modifier = Modifier.fillMaxSize())
-    }
-}
-
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun JsonViewerWidget(
@@ -102,7 +75,7 @@ fun JsonViewerWidget(
 }
 
 @Composable
-fun JsonItemWidget(item: JsonItem, onToggleExpand: (item: JsonItem) -> Unit) {
+private fun JsonItemWidget(item: JsonItem, onToggleExpand: (item: JsonItem) -> Unit) {
     Row(
         modifier = Modifier.defaultMinSize(minHeight = 32.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -129,5 +102,32 @@ fun JsonItemWidget(item: JsonItem, onToggleExpand: (item: JsonItem) -> Unit) {
                 fontWeight = FontWeight.Medium
             )
         )
+    }
+}
+
+@Preview(device = Devices.PIXEL_4_XL)
+@Composable
+private fun JsonViewerWidgetPreview() {
+    val json = JSONArray().apply {
+        for (i in 0 until 10) {
+            put(JSONObject().apply {
+                put("string", "string_$i")
+                put("boolean", true)
+                put("float", i)
+                put("integer", i.toFloat())
+                put("array", JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("string$i", "test")
+                    })
+                })
+            })
+        }
+    }
+
+    val list = JsonParser().parse(json.toString())
+    Box(
+        modifier = Modifier.background(color = Color.White)
+    ) {
+        JsonViewerWidget(list = list, modifier = Modifier.fillMaxSize())
     }
 }
