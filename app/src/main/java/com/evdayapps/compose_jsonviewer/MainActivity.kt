@@ -3,13 +3,20 @@ package com.evdayapps.compose_jsonviewer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import com.evdayapps.compose_jsonviewer.ui.theme.ComposeJsonviewerTheme
 import com.evdayapps.jsonviewer.JsonItem
 import com.evdayapps.jsonviewer.JsonParser
 import com.evdayapps.jsonviewer.JsonViewerWidget
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
 
@@ -30,15 +37,15 @@ class MainActivity : ComponentActivity() {
         var inputStream: InputStream? = null
         try {
             inputStream = assets.open("demo.json")
-            val lenght = inputStream.available()
-            val buffer = ByteArray(lenght)
+            val length = inputStream.available()
+            val buffer = ByteArray(length)
             inputStream.read(buffer)
             return String(buffer, Charsets.UTF_8)
         } catch (e: IOException) {
             e.printStackTrace()
         } finally {
             try {
-                inputStream?.close();
+                inputStream?.close()
             } catch (_: Exception) {
 
             }
@@ -58,9 +65,23 @@ fun PageWidget(
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            list.value = JsonParser().parse(loadData())
+            list.value = JsonParser().parse(JSONArray().apply {
+                for (i in 0 until 10) {
+                    put(JSONObject().apply {
+                        put("string", "string_$i")
+                        put("boolean", true)
+                        put("float", i)
+                        put("integer", i.toFloat())
+                        put("array", JSONArray().apply {
+                            put(JSONObject().apply {
+                                put("string$i", "test")
+                            })
+                        })
+                    })
+                }
+            }.toString())
         }
     }
 
-    JsonViewerWidget(list = list.value)
+    JsonViewerWidget(list = list.value, modifier = Modifier.fillMaxSize())
 }

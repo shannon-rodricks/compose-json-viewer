@@ -8,10 +8,16 @@ import org.json.JSONTokener
 /**
  * Main parser class
  * Input: Json String
- * Output: List of [JsonItem] which can be fed into a
+ * Output: List of [JsonItem] which can be fed into a [JsonViewerWidget]
  */
 class JsonParser {
 
+    /**
+     * Main parse method
+     * @param strJson The json object/array, as a string
+     * @return List of [JsonItem]
+     * @throws IllegalArgumentException if string doesnt represent a json object/array
+     */
     @Throws(JSONException::class, java.lang.IllegalArgumentException::class)
     fun parse(strJson: String): List<JsonItem> {
         val data: Any?
