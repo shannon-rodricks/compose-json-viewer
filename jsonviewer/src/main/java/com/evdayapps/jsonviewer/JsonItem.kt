@@ -8,14 +8,6 @@ import org.json.JSONObject
 import java.util.regex.Pattern
 import kotlin.math.max
 
-val colorKey = Color(0xFF272829)
-val colorBoolean = Color(0xFFD163DD)
-val colorInt = Color(0xFF1E88E5)
-val colorFloat = Color(0xff8250c4)
-val colorString = Color(0xFF43A047)
-val colorStringUrl = Color(0xFF00ACC1)
-val colorNull = Color(0xFFDD031C)
-val colorUnknown = Color(0xFF4D4C4C)
 
 private val regexUrl = Pattern.compile(
     "^((https|http|ftp|rtsp|mms)?://)"
@@ -36,7 +28,8 @@ data class JsonItem(
     val element: Any?,
     val closingTag: Boolean = false,
     var expanded: Boolean = true,
-    val ancestry: List<JsonItem>
+    val ancestry: List<JsonItem>,
+    val styles: JsonViewerStyles
 ) {
 
     private val depth: Int = ancestry.size
@@ -63,24 +56,24 @@ data class JsonItem(
     }
 
     private val textRightExpanded: AnnotatedString = when (element) {
-        is JSONObject -> AnnotatedString("{", SpanStyle(color = colorUnknown))
-        is JSONArray -> AnnotatedString("[", SpanStyle(color = colorUnknown))
+        is JSONObject -> AnnotatedString("{", styles.UNKNOWN)
+        is JSONArray -> AnnotatedString("[", styles.UNKNOWN)
         is String -> AnnotatedString(
             "\"$element\"",
-            SpanStyle(color = if (isUrl(element)) colorStringUrl else colorString)
+            if (isUrl(element)) styles.URL else styles.STRING
         )
-        is Int -> AnnotatedString(element.toString(), SpanStyle(color = colorInt))
-        is Float -> AnnotatedString(element.toString(), SpanStyle(color = colorFloat))
-        is Boolean -> AnnotatedString(element.toString(), SpanStyle(color = colorBoolean))
+        is Int -> AnnotatedString(element.toString(), styles.INT)
+        is Float -> AnnotatedString(element.toString(), styles.FLOAT)
+        is Boolean -> AnnotatedString(element.toString(), styles.BOOLEAN)
         // TODO Check for null ( == null ain't working!)
 
-        else -> AnnotatedString(element.toString(), SpanStyle(color = colorUnknown))
+        else -> AnnotatedString(element.toString(), styles.UNKNOWN)
     }
 
     private val textRightCollapsed: AnnotatedString = when (element) {
         is JSONArray -> AnnotatedString.Builder().apply {
             append("[... ")
-            append(AnnotatedString(element.length().toString(), SpanStyle(color = colorString)))
+            append(AnnotatedString(element.length().toString(), styles.STRING))
             append(" ...]")
         }.toAnnotatedString()
         is JSONObject -> AnnotatedString.Builder().apply {
@@ -96,7 +89,7 @@ data class JsonItem(
                 (element.names()?.length() ?: 0).toString()
             }
 
-            append(AnnotatedString(placeholder, SpanStyle(color = colorString)))
+            append(AnnotatedString(placeholder, styles.STRING))
 
             append(" ...}")
         }.toAnnotatedString()
@@ -133,7 +126,7 @@ data class JsonItem(
                 if (startIndex != -1) {
                     highlights.add(
                         AnnotatedString.Range(
-                            SpanStyle(background = Color.Yellow),
+                            styles.HIGHLIGHT,
                             startIndex,
                             startIndex + query.length
                         )

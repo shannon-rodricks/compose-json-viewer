@@ -9,8 +9,12 @@ import org.json.JSONTokener
  * Main parser class
  * Input: Json String
  * Output: List of [JsonItem] which can be fed into a [JsonViewerWidget]
+ *
+ * @property [styles] Instance of [JsonViewerStyles]
  */
-class JsonParser {
+class JsonParser(
+    private val styles: JsonViewerStyles = JsonViewerStyles()
+) {
 
     /**
      * Main parse method
@@ -55,7 +59,7 @@ class JsonParser {
         ancestry: List<JsonItem> = listOf()
     ): List<JsonItem> {
         val result = mutableListOf<JsonItem>()
-        val item = JsonItem(key = key, element = obj, ancestry = ancestry)
+        val item = JsonItem(key = key, element = obj, ancestry = ancestry, styles = styles)
         result.add(item)
 
         val newAncestry = ancestry.plus(item)
@@ -74,7 +78,7 @@ class JsonParser {
 
         // Closing Tag
         result.add(
-            JsonItem(closingTag = true, element = "}", ancestry = newAncestry)
+            JsonItem(closingTag = true, element = "}", ancestry = newAncestry, styles = styles)
         )
 
         return result
@@ -86,7 +90,7 @@ class JsonParser {
         ancestry: List<JsonItem> = listOf()
     ): List<JsonItem> {
         val result = mutableListOf<JsonItem>()
-        val item = JsonItem(key = key, element = array, ancestry = ancestry)
+        val item = JsonItem(key = key, element = array, ancestry = ancestry, styles = styles)
         result.add(item)
 
         val newAncestry = ancestry.plus(item)
@@ -102,7 +106,7 @@ class JsonParser {
 
         // Closing Tag
         result.add(
-            JsonItem(closingTag = true, element = "]", ancestry = newAncestry)
+            JsonItem(closingTag = true, element = "]", ancestry = newAncestry, styles = styles)
         )
 
         return result
@@ -114,7 +118,7 @@ class JsonParser {
         ancestry: List<JsonItem> = listOf()
     ): List<JsonItem> {
         return listOf(
-            JsonItem(key = key, element = value, ancestry = ancestry)
+            JsonItem(key = key, element = value, ancestry = ancestry, styles = styles)
         )
     }
 

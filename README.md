@@ -7,5 +7,5 @@ A JSON viewer, built in Jetpack Compose
 - [x] Test with large dataset (used `https://api.github.com/users/google/repos` output, replicated a few times)
 - [ ] Search
 - [ ] Highlight null appropriately
-- [ ] Configurable colors
+- [x] Configurable styles
 - [ ] Zoom in/out
