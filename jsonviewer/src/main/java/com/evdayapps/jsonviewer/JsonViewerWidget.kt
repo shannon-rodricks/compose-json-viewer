@@ -31,26 +31,24 @@ import org.json.JSONObject
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun JsonViewerWidget(
-    list: List<JsonItem>,
+    mainList: List<JsonItem>,
     modifier: Modifier = Modifier
 ) {
     var search by remember { mutableStateOf(TextFieldValue("")) }
     val horizontalScrollState = rememberScrollState()
-    var filteredList by mutableStateOf(list)
+    var filteredList by remember(key1 = mainList.hashCode()) { mutableStateOf(mainList) }
 
     Column {
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = search,
             label = { Text("Search") },
-            placeholder = { Text("Search by key or value")},
+            placeholder = { Text("Search by key or value") },
             onValueChange = {
                 if (it.text != search.text) {
                     search = it
-                    list.forEach { item -> item.query(it.text) }
-                    filteredList = list.filter {
-                        it.ancestry.all { it.expanded }
-                    }
+                    mainList.forEach { item -> item.query(it.text) }
+                    filteredList = mainList.filter { item -> item.visible }
                 }
             }
         )
@@ -59,14 +57,14 @@ fun JsonViewerWidget(
                 .horizontalScroll(horizontalScrollState)
                 .fillMaxWidth()
         ) {
-            items(filteredList) {
+            items(filteredList, key = {
+                it.hashCode()
+            }) {
                 JsonItemWidget(
                     item = it,
                     onToggleExpand = {
-                        it.expanded = !it.expanded
-                        filteredList = list.filter {
-                            it.ancestry.all { it.expanded }
-                        }
+                        it.toggleExpanded()
+                        filteredList = mainList.filter { it.visible }
                     }
                 )
             }
@@ -128,6 +126,6 @@ private fun JsonViewerWidgetPreview() {
     Box(
         modifier = Modifier.background(color = Color.White)
     ) {
-        JsonViewerWidget(list = list, modifier = Modifier.fillMaxSize())
+        JsonViewerWidget(mainList = list, modifier = Modifier.fillMaxSize())
     }
 }

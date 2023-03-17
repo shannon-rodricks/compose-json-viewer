@@ -65,23 +65,9 @@ fun PageWidget(
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            list.value = JsonParser().parse(JSONArray().apply {
-                for (i in 0 until 10) {
-                    put(JSONObject().apply {
-                        put("string", "string_$i")
-                        put("boolean", true)
-                        put("float", i)
-                        put("integer", i.toFloat())
-                        put("array", JSONArray().apply {
-                            put(JSONObject().apply {
-                                put("string$i", "test")
-                            })
-                        })
-                    })
-                }
-            }.toString())
+            list.value = JsonParser().parse(loadData())
         }
     }
 
-    JsonViewerWidget(list = list.value, modifier = Modifier.fillMaxSize())
+    JsonViewerWidget(mainList = list.value, modifier = Modifier.fillMaxSize())
 }

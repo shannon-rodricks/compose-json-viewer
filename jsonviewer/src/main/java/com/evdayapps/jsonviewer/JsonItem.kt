@@ -23,7 +23,7 @@ private val regexUrl = Pattern.compile(
     Pattern.CASE_INSENSITIVE
 )
 
-data class JsonItem(
+class JsonItem(
     val key: String? = null,
     val element: Any?,
     val closingTag: Boolean = false,
@@ -37,8 +37,9 @@ data class JsonItem(
 
     val showButton = element is JSONObject || element is JSONArray
 
-    var leftMatchString: AnnotatedString? = null
-    var rightMatchString: AnnotatedString? = null
+    // Variables to store query matches in
+    private var leftMatchString: AnnotatedString? = null
+    private var rightMatchString: AnnotatedString? = null
 
     // Text before the button, if any. Space + key
     private val textLeftRaw = AnnotatedString(
@@ -101,6 +102,13 @@ data class JsonItem(
             true -> AnnotatedString("")
             else -> if (expanded) (rightMatchString ?: textRightExpanded) else textRightCollapsed
         }
+
+    val visible: Boolean
+        get() = ancestry.all { it.expanded }
+
+    fun toggleExpanded() {
+        expanded = !expanded
+    }
 
     // region Search
     fun query(query: String) {
